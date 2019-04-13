@@ -241,7 +241,7 @@ func TestRunWithGraphQLErrors(t *testing.T) {
 
 	gqlerr := gqerr[0]
 	if gqlerr.Message != "oops" {
-		t.Errorf("GraphQL error message shoudl be 'oops', but is %s", gqlerr.Message)
+		t.Errorf("GraphQL error message should be 'oops', but is %s", gqlerr.Message)
 	}
 	if gqlerr.Extensions["code"] != "failcode" {
 		t.Errorf("GraphQL error extensions.code should be 'failcode', but is not. The extensions are %s", prettyPrint(gqlerr.Extensions))

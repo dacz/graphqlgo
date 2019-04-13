@@ -26,7 +26,7 @@
 // and "Accept": "application/json; charset=utf-8"
 // are specified by default, you don't need to set them.
 //
-// To close the http request immediatelly so the socket can be resused
+// To close the http request immediately so the socket can be resused
 //   client := graphqlgo.NewClient("https://...", ImmediatelyCloseReqBody())
 //
 // Options for request
@@ -82,6 +82,7 @@ type Client struct {
 	InspectRun map[string]interface{}
 }
 
+// InspectData provides info about request and response
 type InspectData map[string]interface{}
 
 // type InspectData struct {
@@ -115,6 +116,7 @@ func NewClient(endpoint string, opts ...ClientOption) *Client {
 	return c
 }
 
+// RequestBody reflect the structure of GraphQL Request
 type RequestBody struct {
 	Query         string                 `json:"query"`
 	Variables     map[string]interface{} `json:"variables"`
@@ -194,7 +196,7 @@ func (c *Client) Run(ctx context.Context, req *Request, resp interface{}) ([]Gra
 	// capture for inspection
 	c.InspectRun["ResBody"] = buf.String()
 
-	var gr GraphResponse
+	var gr GraphQLResponse
 
 	// inject own type
 	gr.Data = resp
@@ -209,7 +211,7 @@ func (c *Client) Run(ctx context.Context, req *Request, resp interface{}) ([]Gra
 	return nil, nil
 }
 
-// Var sets a variables for the request
+// Vars sets a variables for the request
 func (req *Request) Vars(vars map[string]interface{}) {
 	if req.vars == nil {
 		req.vars = make(map[string]interface{})
@@ -284,7 +286,8 @@ func (e *GraphQLError) Error() string {
 // --------------------
 // Request and response
 
-type GraphResponse struct {
+// GraphQLResponse describes GraphQL response
+type GraphQLResponse struct {
 	Data   interface{}    `json:"data"`
 	Errors []GraphQLError `json:"errors"`
 }
@@ -317,6 +320,8 @@ func NewRequest(q string, opts ...RequestOption) *Request {
 }
 
 // Request's functional options
+
+// RequestOption is a functional option
 type RequestOption func(*Request)
 
 // WithVars allows to specify variables for the request
