@@ -128,7 +128,12 @@ func TestRunWithOpts(t *testing.T) {
 	}
 
 	// t.Log(prettyPrint(client.InspectRun))
-	val, ok := client.InspectRun.ReqHeaders["X-Some-Fromcli"]
+	reqHeaders, ok := client.InspectRun["ReqHeaders"].(http.Header)
+	if !ok {
+		t.Fatal("Request headers should be able to typecast")
+	}
+
+	val, ok := reqHeaders["X-Some-Fromcli"]
 	if !ok {
 		t.Error("Request should contain header 'X-Some-Fromcli'")
 	}
@@ -136,7 +141,7 @@ func TestRunWithOpts(t *testing.T) {
 		t.Errorf("Header 'X-Some-Fromcli' should be 'cliVal'. This header is %#v\n", val)
 	}
 
-	val, ok = client.InspectRun.ReqHeaders["X-Some-Fromreq"]
+	val, ok = reqHeaders["X-Some-Fromreq"]
 	if !ok {
 		t.Error("Request should contain header 'X-Some-Fromreq'")
 	}
@@ -159,9 +164,14 @@ func TestRunWithOpts(t *testing.T) {
 		t.Errorf("clientRun should not return error: %v", err)
 	}
 
-	_, ok = client.InspectRun.ReqHeaders["X-Some-Fromreq"]
+	reqHeaders, ok = client.InspectRun["ReqHeaders"].(http.Header)
+	if !ok {
+		t.Fatal("Request headers should be able to typecast")
+	}
+
+	_, ok = reqHeaders["X-Some-Fromreq"]
 	if ok {
-		t.Errorf("There should not be 'X-Some-Fromreq' in the second query but is. All headers: %s\n", prettyPrint(client.InspectRun.ReqHeaders))
+		t.Errorf("There should not be 'X-Some-Fromreq' in the query but is. All headers: %s\n", prettyPrint(client.InspectRun["ReqHeaders"]))
 	}
 }
 

@@ -79,18 +79,20 @@ type Client struct {
 
 	// Inspect contains info about the Req and Res of the last Run
 	// is resets on the beginning of every client.Run()
-	InspectRun InspectData
+	InspectRun map[string]interface{}
 }
 
-type InspectData struct {
-	ReqHeaders       http.Header
-	ReqBody          *RequestBody
-	ResStatusCode    int
-	ResHeaders       http.Header
-	ResCookies       []*http.Cookie
-	ResContentLength int64
-	ResBody          string
-}
+type InspectData map[string]interface{}
+
+// type InspectData struct {
+// 	ReqHeaders       http.Header
+// 	ReqBody          *RequestBody
+// 	ResStatusCode    int
+// 	ResHeaders       http.Header
+// 	ResCookies       []*http.Cookie
+// 	ResContentLength int64
+// 	ResBody          string
+// }
 
 // NewClient makes a new Client capable of making GraphQL requests.
 func NewClient(endpoint string, opts ...ClientOption) *Client {
@@ -140,7 +142,7 @@ func (c *Client) Run(ctx context.Context, req *Request, resp interface{}) ([]Gra
 	}
 
 	// adding for possibility to inspect
-	c.InspectRun.ReqBody = &requestBodyObj
+	c.InspectRun["ReqBody"] = &requestBodyObj
 
 	if err := json.NewEncoder(&requestBody).Encode(requestBodyObj); err != nil {
 		return nil, errors.Wrap(err, "encode body")
@@ -165,7 +167,7 @@ func (c *Client) Run(ctx context.Context, req *Request, resp interface{}) ([]Gra
 			r.Header.Add(key, value)
 		}
 	}
-	c.InspectRun.ReqHeaders = r.Header
+	c.InspectRun["ReqHeaders"] = r.Header
 
 	r = r.WithContext(ctx)
 	res, err := c.httpClient.Do(r)
@@ -175,10 +177,10 @@ func (c *Client) Run(ctx context.Context, req *Request, resp interface{}) ([]Gra
 	defer res.Body.Close()
 
 	// capture for inspection
-	c.InspectRun.ResStatusCode = res.StatusCode
-	c.InspectRun.ResHeaders = res.Header
-	c.InspectRun.ResCookies = res.Cookies() // should return func to be consistent with http?
-	c.InspectRun.ResContentLength = res.ContentLength
+	c.InspectRun["ResStatusCode"] = res.StatusCode
+	c.InspectRun["ResHeaders"] = res.Header
+	c.InspectRun["ResCookies"] = res.Cookies() // should return func to be consistent with http?
+	c.InspectRun["ResContentLength"] = res.ContentLength
 
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("HTTP Error %v: graphql server returned a non-200 status code", res.StatusCode)
@@ -190,7 +192,7 @@ func (c *Client) Run(ctx context.Context, req *Request, resp interface{}) ([]Gra
 	}
 
 	// capture for inspection
-	c.InspectRun.ResBody = buf.String()
+	c.InspectRun["ResBody"] = buf.String()
 
 	var gr GraphResponse
 
