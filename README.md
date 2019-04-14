@@ -1,6 +1,8 @@
 # graphqlgo [![GoDoc](https://godoc.org/github.com/dacz/graphqlgo?status.png)](https://godoc.org/github.com/dacz/graphqlgo) [![Go Report Card](https://goreportcard.com/badge/github.com/dacz/graphqlgo)](https://goreportcard.com/report/github.com/dacz/graphqlgo) [![Build](https://travis-ci.org/dacz/graphqlgo.svg?branch=master)](https://travis-ci.org/dacz/graphqlgo)
 
-GraphQL client package for Go.
+GraphQL client package for Go. ALPHA!
+
+**THIS IS WORK IN PROGRESS, API IS UNSTABLE!**
 
 - Respects `context.Context` timeouts and cancellation
 - Build and execute GraphQL request (but doesn't support subscriptions)
